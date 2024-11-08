@@ -1,10 +1,17 @@
-import './App.css';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import UserForm from "./component/UserForm";
+import Home from "./page/Home";
 
 function App() {
   return (
-    <>
-    <h1>Hello World!</h1>
-    </>
+      <Router>
+          <Home>
+                <Routes>
+                  <Route path="/add-user" element={<UserForm />} />
+                  {/*<Route path="/manage-points/:userId" element={<ManagePoints />} />*/}
+                </Routes>
+          </Home>
+      </Router>
   );
 }
 
