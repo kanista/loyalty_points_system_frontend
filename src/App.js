@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import UserForm from "./component/UserForm";
 import Home from "./page/Home";
+import Dashboard from "./page/DashBoard";
 
 function App() {
   return (
@@ -8,7 +9,7 @@ function App() {
           <Home>
                 <Routes>
                   <Route path="/add-user" element={<UserForm />} />
-                  {/*<Route path="/manage-points/:userId" element={<ManagePoints />} />*/}
+                    <Route path="/" element={<Dashboard />} />
                 </Routes>
           </Home>
       </Router>

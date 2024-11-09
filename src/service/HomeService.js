@@ -14,35 +14,33 @@ const createUser=async (userRequest)=>{
         return response;
     }catch(error){
         console.log(error);
-        return error.response.data;
+        return error.response?.data;
     }
 }
 
 const addPoints = async (customerId, points) => {
     try {
-        const response = await axios.post(API_ENDPOINTS.ADD_POINTS(customerId), {
-            params: { points }
-        });
+        const response = await axios.post(API_ENDPOINTS.ADD_POINTS(customerId) + `?points=${points}`);
         console.log(response);
         return response;
     } catch (error) {
         console.error("Error adding points:", error);
-        return error.response;
+        return error.response?.data;
     }
 };
 
 const redeemPoints = async (customerId, points) => {
     try {
-        const response = await axios.post(API_ENDPOINTS.REDEEM_POINTS(customerId), {
-            params: { points }
-        });
+        const response = await axios.post(API_ENDPOINTS.REDEEM_POINTS(customerId) + `?points=${points}`);
         console.log(response);
         return response;
     } catch (error) {
         console.error("Error redeeming points:", error);
-        return error.response;
+        return error.response?.data;
     }
 };
+
+
 
 const getCustomerPoints = async (customerId) => {
     try {
@@ -51,7 +49,7 @@ const getCustomerPoints = async (customerId) => {
         return response;
     } catch (error) {
         console.error("Error retrieving customer points:", error);
-        return error.response;
+        return error.response?.data;
     }
 };
 
@@ -59,10 +57,10 @@ const getAllCustomersWithPoints = async () => {
     try {
         const response = await axios.get(API_ENDPOINTS.GET_ALL_CUSTOMERS_WITH_POINTS);
         console.log(response);
-        return response;
+        return response.data;
     } catch (error) {
         console.error("Error retrieving all customers with points:", error);
-        return error.response;
+        return error.response?.data;
     }
 };
 

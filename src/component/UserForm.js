@@ -9,11 +9,10 @@ const UserForm =()=>{
         try {
             const response = await HomeService.createUser(values);
             if (response.status === 201) {
-                message.success(response.data.message || "User created successfully!");
-                localStorage.setItem("user", JSON.stringify(response.data.data));
+                message.success(response.message || "User created successfully!");
                 form.resetFields();
             } else {
-                message.error(response.data.message || "Failed to create user.");
+                message.error(response.message || "Failed to create user.");
             }
         } catch (error) {
             message.error("Failed to create user. Please try again.");
