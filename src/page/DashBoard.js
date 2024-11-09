@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import {Table, Button, Modal, InputNumber, message, Row, Divider, Descriptions} from "antd";
+import { Table, Button, Modal, InputNumber, message, Row, Divider, Descriptions } from "antd";
 import loyaltyService from "../service/HomeService";
-import moment from 'moment';
-import './Dashboard.scss';
-import {MinusCircleOutlined, PlusCircleOutlined} from "@ant-design/icons";
+import moment from "moment";
+import "./Dashboard.scss";
+import {EyeOutlined, MinusOutlined, PlusOutlined} from "@ant-design/icons";
 
 const Dashboard = () => {
     const [customers, setCustomers] = useState([]);
@@ -29,8 +29,8 @@ const Dashboard = () => {
         fetchCustomers();
     }, []);
 
-    const handleAddPoints = (customerId) => {
-        setSelectedCustomer(customerId);
+    const handleAddPoints = (customer) => {
+        setSelectedCustomer(customer);
         setProductPrice(0);
         setCalculatedPoints(0);
         setIsAddPointsModalVisible(true);
@@ -38,7 +38,7 @@ const Dashboard = () => {
 
     const handleAddPointsSubmit = async () => {
         const pointsToAdd = calculatedPoints;
-        const response = await loyaltyService.addPoints(selectedCustomer, pointsToAdd);
+        const response = await loyaltyService.addPoints(selectedCustomer.customerId, pointsToAdd);
         if (response.status === 200) {
             message.success(response.message || "Points added successfully!");
             setIsAddPointsModalVisible(false);
@@ -48,14 +48,15 @@ const Dashboard = () => {
         }
     };
 
-    const handleRedeemPoints = (customerId) => {
-        setSelectedCustomer(customerId);
+    const handleRedeemPoints = (customer) => {
+        setSelectedCustomer(customer);
         setRedeemPoints(0);
         setIsRedeemPointsModalVisible(true);
+
     };
 
     const handleRedeemSubmit = async () => {
-        const response = await loyaltyService.redeemPoints(selectedCustomer, redeemPoints);
+        const response = await loyaltyService.redeemPoints(selectedCustomer.customerId, redeemPoints);
         if (response.status === 200) {
             message.success(response.message || "Points redeemed successfully!");
             setIsRedeemPointsModalVisible(false);
@@ -65,9 +66,10 @@ const Dashboard = () => {
         }
     };
 
-    const handleRowClick = (record) => {
-        setSelectedCustomer(record);
+    const handleViewDetails = (customer) => {
+        setSelectedCustomer(customer);
         setIsUserDetailModalVisible(true);
+
     };
 
     const columns = [
@@ -80,17 +82,22 @@ const Dashboard = () => {
             render: (_, record) => (
                 <>
                     <Button
-                        type="primary"
-                        icon={<PlusCircleOutlined />}
-                        onClick={() => handleAddPoints(record.customerId)}
-                        style={{ marginRight: "8px" }}
+                        type="text"
+                        icon={<PlusOutlined />}
+                        onClick={() => handleAddPoints(record)}
+                        style={{ marginRight: "3px" ,color:"#007BFFD8"}}
                     />
                     <Button
-                        type="default"
-                        icon={<MinusCircleOutlined />}
-                        onClick={() => handleRedeemPoints(record.customerId)}
+                        type="text"
+                        icon={<MinusOutlined />}
+                        onClick={() => handleRedeemPoints(record)}
+                        style={{ marginRight: "3px" ,color:"red"}}
                     />
-
+                    <Button
+                        type="text"
+                        icon={<EyeOutlined />}
+                        onClick={() => handleViewDetails(record)}
+                    />
                 </>
             ),
         },
@@ -98,7 +105,6 @@ const Dashboard = () => {
 
     return (
         <div className="dashboard-container">
-
             <Row gutter={24}>
                 <h3>Loyalty Points Dashboard</h3>
                 <Divider />
@@ -108,9 +114,6 @@ const Dashboard = () => {
                 columns={columns}
                 dataSource={customers || []}
                 rowKey={(record) => record.customerId}
-                onRow={(record) => ({
-                    onClick: () => handleRowClick(record),
-                })}
             />
 
             <Modal
@@ -123,9 +126,11 @@ const Dashboard = () => {
                     <Descriptions.Item label="Email">{selectedCustomer?.email}</Descriptions.Item>
                     <Descriptions.Item label="Phone No">{selectedCustomer?.phone}</Descriptions.Item>
                     <Descriptions.Item label="Points">{selectedCustomer?.points}</Descriptions.Item>
-                    <Descriptions.Item label="Last Updated"> {selectedCustomer?.lastUpdated
-                        ? moment(selectedCustomer.lastUpdated).format("DD MMM YYYY, HH:mm")
-                        : "N/A"}</Descriptions.Item>
+                    <Descriptions.Item label="Last Updated">
+                        {selectedCustomer?.lastUpdated
+                            ? moment(selectedCustomer.lastUpdated).format("DD MMM YYYY, HH:mm")
+                            : "N/A"}
+                    </Descriptions.Item>
                 </Descriptions>
             </Modal>
 
@@ -143,7 +148,7 @@ const Dashboard = () => {
                         setCalculatedPoints(value * 0.05);
                     }}
                     min={0}
-                    style={{ width: "100%", }}
+                    style={{ width: "100%" }}
                 />
                 <p>Calculated Points: {calculatedPoints}</p>
 
@@ -156,14 +161,13 @@ const Dashboard = () => {
                 </Button>
             </Modal>
 
-
             <Modal
                 title="Redeem Points"
                 open={isRedeemPointsModalVisible}
                 onCancel={() => setIsRedeemPointsModalVisible(false)}
                 footer={null}
             >
-                <p>Total Points: {customers.find(c => c.customerId === selectedCustomer)?.points || 0}</p>
+                <p>Total Points: {selectedCustomer?.points || 0}</p>
                 <InputNumber
                     min={1}
                     value={redeemPoints}
@@ -181,7 +185,6 @@ const Dashboard = () => {
                     Redeem Points
                 </Button>
             </Modal>
-
         </div>
     );
 };
